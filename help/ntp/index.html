@@ -82,7 +82,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ntp.ite.jsut.edu.cn
 </code></pre></div></div>
 
-<p>服务器位于清华校内，提供 IPv4 与 IPv6 双栈服务。校内师生可以使用这一服务进行一般的时间校准工作，但需要进行校园网认证；我们建议同时配置学校信息化技术中心提供的 NTP (114.5.1.4 / 114.5.1.5 / 2001:114::514 / 2001:114::515) 服务作为备用。</p>
+<p>服务器位于江理工校内，仅提供 IPv4 服务。校内师生可以使用这一服务进行一般的时间校准工作，但需要进行校园网认证；我们建议同时配置学校信息中心提供的 NTP (192.168.6.189 / 192.168.6.190) 服务作为备用。</p>
 
 <h3 id="服务介绍">服务介绍</h3>
 
@@ -102,7 +102,7 @@
 
 <p>在“系统配置 &gt; 日期与时间 &gt; 自动设置日期与时间”一栏，填入 <code class="language-plaintext highlighter-rouge">ntp.ite.jsut.edu.cn</code>。</p>
 
-<p>在 macOS Mojave 及更新的系统，你可以使用 sudo sntp -sS ntp.tuna.tsinghua.edu.cn 来进行一次性的同步，否则，使用 <code class="language-plaintext highlighter-rouge">sudo ntpdate ntp.tuna.tsinghua.edu.cn</code> 进行同步。</p>
+<p>在 macOS Mojave 及更新的系统，你可以使用 sudo sntp -sS ntp.ite.jsut.edu.cn 来进行一次性的同步，否则，使用 <code class="language-plaintext highlighter-rouge">sudo ntpdate ntp.ite.jsut.edu.cn</code> 进行同步。</p>
 
 <h3 id="windows-客户端配置">Windows 客户端配置</h3>
 
