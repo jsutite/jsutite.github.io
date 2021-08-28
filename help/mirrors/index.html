@@ -13,7 +13,7 @@
 
 
 <!-- Open Graph metadata -->
-<meta property="og:title" content="ITE MIRRORS (开源镜像) 服务使用说明 | 江苏理工学院网络与开源软件协会" />
+<meta property="og:title" content="ITE MIR189 (开源镜像) 服务使用说明 | 江苏理工学院网络与开源软件协会" />
 <meta property="og:description" content="江苏理工学院网络与开源软件协会原名江苏理工学院网络协会，注册名江苏理工学院网络协会，是由江苏理工学院网络技术和开源软件爱好者、技术宅组成的团体。现阶段仅向校内提供开源软件镜像等服务。" />
 <meta property="og:image" content="https://jsutite.github.io//assets/img/logo-share.png" /> <!-- WeChat requires that thumbnail image is larger than 300x300 -->
 <meta property="og:url" content="https://jsutite.github.io//help/mirrors/" />
@@ -21,7 +21,7 @@
 <meta property="og:type" content="website" />
 
 
-<title>ITE MIRRORS (开源镜像) 服务使用说明 | 江苏理工学院网络与开源软件协会</title>
+<title>ITE MIR189 (开源镜像) 服务使用说明 | 江苏理工学院网络与开源软件协会</title>
 
 <!-- Bootstrap core CSS -->
 <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -73,15 +73,40 @@
         <! -- SINGLE POST -->
         <div class="col-lg-12">
             <! -- Blog Post  -->
-            <a href="/help/mirrors/"><h3 class="ctitle">ITE MIRRORS (开源镜像) 服务使用说明</h3></a>
+            <a href="/help/mirrors/"><h3 class="ctitle">ITE MIR189 (开源镜像) 服务使用说明</h3></a>
             <div class="post-content">
             <h3 id="服务总览">服务总览</h3>
 
-<p>ITE 现提供一台开源镜像服务器：</p>
+<p>ITE 现提供一台<strong>内网</strong>开源镜像服务器。</p>
 
-<h1 id="1921686189">192.168.6.189</h1>
+<h1 id="1921686189"><a href="http://192.168.6.189/">192.168.6.189</a></h1>
 
-<p>受磁盘大小影响，当前仅为校内提供部分常用镜像。</p>
+<p>受服务器性能影响，当前仅为校内提供 <code class="language-plaintext highlighter-rouge">CentOS, Kali-images, Ubuntu-release</code> 镜像服务。</p>
+
+<h2 id="centos-镜像使用帮助">CentOS 镜像使用帮助</h2>
+
+<p>该文件夹只提供 CentOS 7 与 8，架构仅为 <code class="language-plaintext highlighter-rouge">x86_64</code> ，如果需要较早版本的 CentOS，请参考清华源 <a href="https://mirrors.tuna.tsinghua.edu.cn/help/centos-vault/">centos-vault</a> 的帮助，若需要其他架构，请参考清华源 <a href="https://mirrors.tuna.tsinghua.edu.cn/help/centos-altarch/">centos-altarch</a> 的帮助。</p>
+
+<p>建议先备份 <code class="language-plaintext highlighter-rouge">/etc/yum.repos.d/</code> 内的文件（CentOS 7 及之前为 <code class="language-plaintext highlighter-rouge">CentOS-Base.repo</code>，CentOS 8 为<code class="language-plaintext highlighter-rouge">CentOS-Linux-*.repo</code>）</p>
+
+<p>然后编辑 <code class="language-plaintext highlighter-rouge">/etc/yum.repos.d/</code> 中的相应文件，在 <code class="language-plaintext highlighter-rouge">mirrorlist=</code> 开头行前面加 <code class="language-plaintext highlighter-rouge">#</code> 注释掉；并将 <code class="language-plaintext highlighter-rouge">baseurl=</code> 开头行取消注释（如果被注释的话），把该行内的域名（例如<code class="language-plaintext highlighter-rouge">mirror.centos.org</code>）替换为 <code class="language-plaintext highlighter-rouge">192.168.6.189</code>。</p>
+
+<p>以上步骤可以被下方的命令一步完成</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+         -e 's|^#baseurl=http://mirror.centos.org|baseurl=https://192.168.6.189|g' \
+         -i.bak \
+         /etc/yum.repos.d/CentOS-*.repo
+</code></pre></div></div>
+
+<p>注意其中的<code class="language-plaintext highlighter-rouge">*</code>通配符，如果只需要替换一些文件中的源，请自行增删。</p>
+
+<p>注意，如果需要启用其中一些 repo，需要将其中的 <code class="language-plaintext highlighter-rouge">enabled=0</code> 改为 <code class="language-plaintext highlighter-rouge">enabled=1</code>。</p>
+
+<p>最后，更新软件包缓存</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo yum makecache
+</code></pre></div></div>
 
             </div>
             <div class="spacing"></div>
