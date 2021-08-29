@@ -81,7 +81,7 @@
 
 <h1 id="1921686189"><a href="http://192.168.6.189/">192.168.6.189</a></h1>
 
-<p>受服务器性能影响，当前仅为校内提供 <code class="language-plaintext highlighter-rouge">CentOS, Kali-images, Ubuntu-release</code> 镜像服务。</p>
+<p>受服务器性能影响，当前仅为校内提供 <code class="language-plaintext highlighter-rouge">CentOS, EPEL</code> 镜像服务。</p>
 
 <h2 id="centos-镜像使用帮助">CentOS 镜像使用帮助</h2>
 
@@ -107,6 +107,63 @@
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo yum makecache
 </code></pre></div></div>
+
+<h2 id="epel-镜像使用帮助">EPEL 镜像使用帮助</h2>
+
+<p>EPEL(Extra Packages for Enterprise Linux)是由Fedora Special Interest Group维护的Enterprise Linux（RHEL、CentOS）中经
+常用到的包。</p>
+
+<p>下面以CentOS 7为例讲解如何使用本镜像站的epel镜像。</p>
+
+<p>首先从CentOS Extras这个源（<a href="http://192.168.6.189/centos">本镜像站</a>也有镜像）里安装epel-release：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum install epel-release
+</code></pre></div></div>
+
+<!-- 当前ITE已经在epel的官方镜像列表里，所以不需要其他配置，mirrorlist机制就能让你的服务器就近使用ITE的镜像。-->
+<p>修改<code class="language-plaintext highlighter-rouge">/etc/yum.repos.d/epel.repo</code>，将<code class="language-plaintext highlighter-rouge">mirrorlist</code>和<code class="language-plaintext highlighter-rouge">metalink</code>开头的行注释掉。</p>
+
+<p>接下来，取消注释这个文件里<code class="language-plaintext highlighter-rouge">baseurl</code>开头的行，并将其中的<code class="language-plaintext highlighter-rouge">http://download.fedoraproject.org/pub</code>替换成<code class="language-plaintext highlighter-rouge">http://192.168.6.189</code>。</p>
+
+<p>可以用如下命令自动替换：（来自 https://github.com/tuna/issues/issues/687）</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sed -e 's!^metalink=!#metalink=!g' \
+    -e 's!^#baseurl=!baseurl=!g' \
+    -e 's!//download\.fedoraproject\.org/pub!//192.168.6.189!g' \
+    -i /etc/yum.repos.d/epel.repo /etc/yum.repos.d/epel-testing.repo
+</code></pre></div></div>
+
+<p>修改结果如下：（仅供参考，不同版本可能不同）</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[epel]
+name=Extra Packages for Enterprise Linux 7 - $basearch
+baseurl=http://192.168.6.189/epel/7/$basearch
+#mirrorlist=http://mirrors.fedoraproject.org/metalink?repo=epel-7&amp;arch=$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+
+[epel-debuginfo]
+name=Extra Packages for Enterprise Linux 7 - $basearch - Debug
+baseurl=http://192.168.6.189/epel/7/$basearch/debug
+#mirrorlist=http://mirrors.fedoraproject.org/metalink?repo=epel-debug-7&amp;arch=$basearch
+failovermethod=priority
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+gpgcheck=1
+
+[epel-source]
+name=Extra Packages for Enterprise Linux 7 - $basearch - Source
+baseurl=http://192.168.6.189/epel/7/SRPMS
+#mirrorlist=http://mirrors.fedoraproject.org/metalink?repo=epel-source-7&amp;arch=$basearch
+failovermethod=priority
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+gpgcheck=1
+</code></pre></div></div>
+
+<p>运行 <code class="language-plaintext highlighter-rouge">yum update</code> 测试一下吧。</p>
 
             </div>
             <div class="spacing"></div>
