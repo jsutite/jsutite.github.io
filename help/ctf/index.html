@@ -13,15 +13,15 @@
 
 
 <!-- Open Graph metadata -->
-<meta property="og:title" content="ITE NTP190 (网络授时) 服务使用说明 | 江苏理工 ITE 协会" />
+<meta property="og:title" content="ITE CTF189 (CTF夺旗赛) 服务使用说明 | 江苏理工 ITE 协会" />
 <meta property="og:description" content="江苏理工 ITE 协会全名江苏理工学院网络与开源软件协会，注册名江苏理工学院网络协会，是由江苏理工学院网络技术和开源软件爱好者、技术宅组成的团体。现阶段仅向校内提供开源软件镜像等服务。" />
 <meta property="og:image" content="https://jsutite.github.io//assets/img/logo-share.png" /> <!-- WeChat requires that thumbnail image is larger than 300x300 -->
-<meta property="og:url" content="https://jsutite.github.io//help/ntp/" />
+<meta property="og:url" content="https://jsutite.github.io//help/ctf/" />
 
 <meta property="og:type" content="website" />
 
 
-<title>ITE NTP190 (网络授时) 服务使用说明 | 江苏理工 ITE 协会</title>
+<title>ITE CTF189 (CTF夺旗赛) 服务使用说明 | 江苏理工 ITE 协会</title>
 
 <!-- Bootstrap core CSS -->
 <link href="/assets/css/bootstrap.css" rel="stylesheet">
@@ -73,47 +73,37 @@
         <! -- SINGLE POST -->
         <div class="col-lg-12">
             <! -- Blog Post  -->
-            <a href="/help/ntp/"><h3 class="ctitle">ITE NTP190 (网络授时) 服务使用说明</h3></a>
+            <a href="/help/ctf/"><h3 class="ctitle">ITE CTF189 (CTF夺旗赛) 服务使用说明</h3></a>
             <div class="post-content">
             <h3 id="服务总览">服务总览</h3>
 
-<p>ITE 现提供一台时间服务器：</p>
+<p>ITE 现提供一台<strong>内网</strong>CTF服务器。</p>
 
-<h1 id="1921686190">192.168.6.190</h1>
+<h1 id="19216861898000"><a href="http://192.168.6.189:8000/">192.168.6.189:8000</a></h1>
 
-<p>服务器位于江理工校内，仅提供 IPv4 服务。校内师生可以使用这一服务进行一般的时间校准工作，但需要进行校园网认证，故不建议在宿舍网内使用。</p>
+<p>以下是一些注意事项。</p>
 
-<p>校外或宿舍网使用NTP服务需使用<a href="http://www.jstu.edu.cn/3412/list.htm">远程接入</a>。</p>
+<ol>
+  <li>
+    <p>选手应该只针对特定网站、特定端口进行合理测试，不应该攻击比赛平台（即本网站），做题过程中不应该恶意扫描爆破、恶意占用资源等；</p>
+  </li>
+  <li>
+    <p>该比赛为个人线上赛，比赛完全结束前，选手应该用自己的账号查看题目、提交答案，不应该使用虚假身份创建账号，不应该组队参加比赛，不应该和他人合作（包括但不限于同学、室友等），讨论题目的解法、提示和答案等；</p>
+  </li>
+  <li>
+    <p>比赛完全结束前，包括但不限于通过任何手段公布解法、提示或答案，向他人索取解法、提示或答案，登录他人帐号或使用他人帐号信息（包括但不限于 Token，题目附件，题目链接等），注册多个帐号参加比赛等行为均属于作弊行为；</p>
+  </li>
+  <li>
+    <p>我们给予参赛选手极高的信任，但组委会有权通过其他证据判定选手的作弊行为，取消涉及作弊行为的所有选手的参赛资格并予以公示；</p>
+  </li>
+  <li>
+    <p>如果选手发现比赛作弊现象，无论该作弊行为是出于何种目的，选手都应该拒绝加入并且告知ITE协会；</p>
+  </li>
+</ol>
 
-<h3 id="服务介绍">服务介绍</h3>
+<p><strong>诚信比成绩更重要！</strong> 我们真诚地希望各位选手能向所有人展现出我们应有的诚信水平，营造公平公正的比赛氛围，在比赛中有所收获！</p>
 
-<p>NTP (网络时间协议, network time protocol) 是网络中保持时间同步的协议 (<a href="http://www.ntp.org/ntpfaq/NTP-s-algo.htm">How does it work</a>)。简单来说，客户端通过向服务器发送带有时间戳的数据包和服务器回复带有时间戳的数据包，来获得客户端发送时间，服务端接收时间、服务端发送时间、客户端接收时间 4 个时间戳。客户端系统时间偏移量定义为 δ = (t₃ - t₀) - (t₂ - t₁)。如果运行 ntpd 服务，一般来说 ntpd 会逐渐调整时钟，避免时间跳变。这对于运行计费系统、交易系统或者其他对时间准确性和事件先后顺序敏感的操作十分重要。</p>
-
-<h3 id="linux-客户端配置">Linux 客户端配置</h3>
-
-<p>使用 systemd-timesyncd 的用户需要修改 <code class="language-plaintext highlighter-rouge">/etc/systemd/timesyncd.conf</code>，将其中 <code class="language-plaintext highlighter-rouge">NTP=</code> 一行取消注释，修改为 <code class="language-plaintext highlighter-rouge">NTP=192.168.6.190</code> 。同时建议校内用户在 <code class="language-plaintext highlighter-rouge">FallbackNTP</code> 一栏中添加服务总览中提到的备用 NTP。修改好后，可使用 <code class="language-plaintext highlighter-rouge">systemctl restart systemd-timesyncd</code> 使配置生效。</p>
-
-<p>使用 ntpd 的用户需要在 <code class="language-plaintext highlighter-rouge">/etc/ntp.conf</code> 中添加一行 <code class="language-plaintext highlighter-rouge">server 192.168.6.190</code> 。（若您的发行版使用 Chrony，请修改对应的配置文件 <code class="language-plaintext highlighter-rouge">/etc/chrony.conf</code>。）</p>
-
-<p>为了确保 ntpd 服务正在运行，使用你的发行版的 initscripts 脚本或 <code class="language-plaintext highlighter-rouge">systemctl</code>（若有）进行检查和修正。</p>
-
-<p>如果你的机器的时钟发生跳变不会有严重后果 (例如在你的笔记本上)，你可以使用 <code class="language-plaintext highlighter-rouge">sudo ntpdate 192.168.6.190</code> 进行一次性的同步。</p>
-
-<h3 id="mac-客户端配置">Mac 客户端配置</h3>
-
-<p>在“系统配置 &gt; 日期与时间 &gt; 自动设置日期与时间”一栏，填入 <code class="language-plaintext highlighter-rouge">192.168.6.190</code>。</p>
-
-<p>在 macOS Mojave 及更新的系统，你可以使用 sudo sntp -sS 192.168.6.190 来进行一次性的同步，否则，使用 <code class="language-plaintext highlighter-rouge">sudo ntpdate 192.168.6.190</code> 进行同步。</p>
-
-<h3 id="windows-客户端配置">Windows 客户端配置</h3>
-
-<p>Windows 7 及以下版本的配置方式可以参看中国科学院提供的<a href="http://www.cas.cn/tz/201809/t20180921_4664344.shtml">教程</a>。</p>
-
-<h4 id="windows-10-客户端配置">Windows 10 客户端配置</h4>
-
-<p>在“控制面板 &gt; 时钟、语言和区域 &gt; 日期和时间 &gt; Internet时间 &gt; 更改设置”中勾选“与 Internet 时间服务器同步”，在“服务器”一栏填入 <code class="language-plaintext highlighter-rouge">192.168.6.190</code>。</p>
-
-<p>您也可以通过在命令提示符中使用  <code class="language-plaintext highlighter-rouge">w32tm /config /manualpeerlist:192.168.6.190 /syncfromflags:manual /update</code> 来将此服务器设置为您的时间服务器.</p>
+<h1 id="h4ck-for-fun-not-for-profit"><a href="http://192.168.6.189:8000/">H4ck for FUN not for PROFIT.</a></h1>
 
             </div>
             <div class="spacing"></div>
