@@ -6,8 +6,8 @@
     <description>江苏理工 ITE 协会全名江苏理工学院网络与开源软件协会，注册名江苏理工学院网络协会，是由江苏理工学院网络技术和开源软件爱好者、技术宅组成的团体。现阶段仅向校内提供开源软件镜像等服务。</description>
     <link>https://jsutite.github.io//</link>
     <atom:link href="https://jsutite.github.io//feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 29 Nov 2021 23:40:35 -0800</pubDate>
-    <lastBuildDate>Mon, 29 Nov 2021 23:40:35 -0800</lastBuildDate>
+    <pubDate>Mon, 29 Nov 2021 23:43:34 -0800</pubDate>
+    <lastBuildDate>Mon, 29 Nov 2021 23:43:34 -0800</lastBuildDate>
     <generator>Jekyll v3.9.0</generator>
     
       <item>
@@ -32,11 +32,13 @@
         <title>event: 2021 江苏理工电脑手机节-网络协会 Oh my CTF</title>
         <description> &lt;p&gt; Location: 线上 &lt;/p&gt; &lt;h1 id=&quot;参赛文档&quot;&gt;&lt;a href=&quot;../../../file/网络协会_Oh_my_CTF_参赛指北.pdf&quot;&gt;参赛文档&lt;/a&gt;&lt;/h1&gt;
 
-&lt;p&gt;&lt;strong&gt;MD5&lt;/strong&gt; 29ed541a382ac8450c4e64bea947e5e4
-&lt;strong&gt;SHA-1&lt;/strong&gt; c63c17d978dc762bdfdfc7eb8569286390329993
-&lt;strong&gt;SHA-256&lt;/strong&gt; dc7293481088c63cbe2a3e4102439c63723a0916d31f13feba276ef4c348ff97&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;MD5&lt;/strong&gt; 29ed541a382ac8450c4e64bea947e5e4&lt;/p&gt;
 
-&lt;h1 id=&quot;welcome-to-jsut-ite-oh-my-ctf&quot;&gt;&lt;a href=&quot;./file/网络协会_Oh_my_CTF_参赛指北.pdf&quot;&gt;Welcome to JSUT-ITE Oh my CTF&lt;/a&gt;&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;SHA-1&lt;/strong&gt; c63c17d978dc762bdfdfc7eb8569286390329993&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;SHA-256&lt;/strong&gt; dc7293481088c63cbe2a3e4102439c63723a0916d31f13feba276ef4c348ff97&lt;/p&gt;
+
+&lt;h1 id=&quot;welcome-to-jsut-ite-oh-my-ctf&quot;&gt;&lt;a href=&quot;../../../file/网络协会_Oh_my_CTF_参赛指北.pdf&quot;&gt;Welcome to JSUT-ITE Oh my CTF&lt;/a&gt;&lt;/h1&gt;
 
 &lt;p&gt;欢迎来到 2021 年江理工信息安全大赛。，时间为 11月 20 号0:00 到 11月 21 号 0:00。&lt;/p&gt;
 
@@ -63,7 +65,7 @@
   &lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h1 id=&quot;h4ck-for-fun-not-for-profits&quot;&gt;&lt;a href=&quot;./file/网络协会_Oh_my_CTF_参赛指北.pdf&quot;&gt;H4ck for FUN not for PROFITS.&lt;/a&gt;&lt;/h1&gt;
+&lt;h1 id=&quot;h4ck-for-fun-not-for-profits&quot;&gt;&lt;a href=&quot;../../../file/网络协会_Oh_my_CTF_参赛指北.pdf&quot;&gt;H4ck for FUN not for PROFITS.&lt;/a&gt;&lt;/h1&gt;
 
 </description>
         <author>Icing Tomato</author>
